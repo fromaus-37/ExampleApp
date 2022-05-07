@@ -11,6 +11,7 @@ namespace ExampleApp
 {
     public class Program
     {
+        //just adding a useless comment here
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
