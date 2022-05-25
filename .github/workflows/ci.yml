@@ -18,5 +18,7 @@ jobs:
         run: echo "container_tag=exampleapp:$(date +%s)" >> $GITHUB_ENV
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ${{ env.container_tag }}
-      - name: Echo tag
-        run: echo "${{ env.container_tag }}"
+      - name: Upload container image to artifacts
+        uses: ishworkh/docker-image-artifact-upload@v1
+        with:
+          image: "${{ env.container_tag }}"
