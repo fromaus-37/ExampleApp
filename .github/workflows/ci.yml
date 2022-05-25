@@ -14,5 +14,9 @@ jobs:
       - uses: actions/checkout@v3
       - run: npm install
       - run: dotnet publish -c Release -o dist
+      - name: Set value of container tag
+        run: echo "container_tag=exampleapp:$(date +%s)" >> $GITHUB_ENV
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+        run: docker build . --file Dockerfile --tag ${{ env.container_tag }}
+      - name: Echo tag
+        run: echo "${{ env.container_tag }}"
