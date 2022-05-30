@@ -4,6 +4,8 @@ on:
   pull_request:
     types: [labeled]
 
+concurrency: uat-pr-${{ github.event.pull_request.number }}
+
 jobs:
   spinup-uat:
     permissions:
