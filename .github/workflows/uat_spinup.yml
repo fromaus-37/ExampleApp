@@ -20,3 +20,7 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: "uat created"
+      - name: Remove 'spinup uat' label from PR
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: "spinup uat"
