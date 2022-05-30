@@ -6,6 +6,9 @@ on:
 
 jobs:
   spinup-uat:
+    permissions:
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'spinup uat') &&
       !contains(github.event.pull_request.labels.*.name, 'uat created')
