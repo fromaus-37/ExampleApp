@@ -1,0 +1,27 @@
+name: Deploy to UAT
+
+concurrency: uat
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'uat')
+
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install
+      - run: dotnet publish -c Release -o dist
+      - name: Set value of container tag
+        run: echo "container_tag=exampleapp:$(date +%s)" >> $GITHUB_ENV
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{ env.container_tag }}
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Publish Docker image to ACR
+        uses:

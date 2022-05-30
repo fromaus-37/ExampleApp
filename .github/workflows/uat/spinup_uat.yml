@@ -1,0 +1,15 @@
+name: Spinup UAT environment
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  spinup-uat:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'spinup uat') &&
+      !contains(github.event.pull_request.labels.*.name, 'uat created')
+
+    steps:
+      - name: print hello world
+        run: echo "Hello World!"
