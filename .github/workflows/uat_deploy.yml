@@ -42,7 +42,7 @@ jobs:
         run: docker push ${{ env.CONTAINER_TAG }}
       - name: Create or restart container instance
         run: |
-          docker context create aci myacicontext --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
+          'docker context create aci myacicontext --subscription-id ${{ secrets.AZURE_SUBSCRIPTION_ID }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}'
 
       - name: Remove deploy label
         uses: actions-ecosystem/action-remove-labels@v1
