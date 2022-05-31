@@ -6,23 +6,44 @@ on:
 
 concurrency: uat-pr-${{ github.event.pull_request.number }}
 
+env:
+  AZURE_RESOURCE_GROUP: rg-exampleapp-uat-pr-${{ github.event.pull_request.number }}
+  AZURE_LOCATION: westeurope
+  AZURE_CONTAINER_REGISTRY: crexampleappuatpr${{ github.event.pull_request.number }}
+
 jobs:
   spinup-uat:
     permissions:
       contents: read
       pull-requests: write
+
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'spinup uat') &&
+    if: contains(github.event.pull_request.labels.*.name, 'spinup') &&
       ! contains(github.event.pull_request.labels.*.name, 'uat created')
 
     steps:
-      - name: print hello world
-        run: echo "Hello World!"
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create resource group
+        if: success()
+        run: az group create --name ${{env.AZURE_RESOURCE_GROUP}} --location ${{env.AZURE_LOCATION}}
+
+      - name: Create Docker registry
+        if: success()
+        run: |
+          az acr create --name ${{env.AZURE_CONTAINER_REGISTRY}} --resource-group ${{env.AZURE_RESOURCE_GROUP}} --sku Basic
+
       - name: Label the PR with 'uat created'
+        if: success()
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: "uat created"
+
       - name: Remove 'spinup uat' label from PR
+        if: success()
         uses: actions-ecosystem/action-remove-labels@v1
         with:
-          labels: "spinup uat"
+          labels: "spinup"
