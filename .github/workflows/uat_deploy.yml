@@ -41,9 +41,6 @@ jobs:
       - name: Publish Docker container
         run: docker push ${{ env.CONTAINER_TAG }}
 
-      - name: "Docker login azure"
-        run: "docker login azure"
-
       - name: Create or restart container instance
         run: |
           docker context create aci myacicontext --subscription-id ${{ secrets.AZURE_SUBSCRIPTION_ID }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
