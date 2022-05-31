@@ -10,8 +10,8 @@ env:
   AZURE_RESOURCE_GROUP: rg-exampleapp-uat-pr-${{ github.event.pull_request.number }}
   AZURE_LOCATION: westeurope
   AZURE_CONTAINER_REGISTRY: crexampleappuatpr${{ github.event.pull_request.number }}
+  CONTAINER_TAG: crexampleappuatpr${{ github.event.pull_request.number }}.azurecr.io/exampleapp:latest
   AZURE_CONTAINER_INSTANCE: ciexampleappuatpr${{ github.event.pull_request.number }}
-  CONTAINER_TAG: ${{ env.AZURE_CONTAINER_INSTANCE}}.azurecr.io/exampleapp:latest
   CONTAINER_FQDN_PREFIX: exampleappuatpr${{ github.event.pull_request.number }}
   SQLSERVER_PASSWORD: ${{secrets.UAT_SQLSERVER_PASSWORD}}
   SQLSERVER_CONNECTION_STRING: ${{secrets.UAT_SQLSERVER_CONNECTION_STRING}}
