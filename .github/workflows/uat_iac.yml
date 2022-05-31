@@ -47,3 +47,24 @@ jobs:
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: "spinup"
+
+  teardown-uat:
+    permissions:
+      contents: read
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+
+    if: contains(github.event.pull_request.labels.*.name, 'teardown') &&
+      contains(github.event.pull_request.labels.*.name, 'uat created')
+
+    steps:
+      - name: Delete resource group
+        run: az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --yes
+      - name: Remove IaC labels from PR
+        if: success()
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            teardown
+            uat created
