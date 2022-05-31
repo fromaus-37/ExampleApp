@@ -1,27 +1,57 @@
-name: Deploy to UAT
-
-concurrency: uat
+name: Spinup or Teardown UAT environment
 
 on:
   pull_request:
     types: [labeled]
 
+concurrency: uat-pr-${{ github.event.pull_request.number }}
+
+env:
+  AZURE_RESOURCE_GROUP: rg-exampleapp-uat-pr-${{ github.event.pull_request.number }}
+  AZURE_LOCATION: westeurope
+  AZURE_CONTAINER_REGISTRY: crexampleappuatpr${{ github.event.pull_request.number }}
+  AZURE_CONTAINER_INSTANCE: ciexampleappuatpr${{ github.event.pull_request.number }}
+  CONTAINER_TAG: ${{ env.AZURE_CONTAINER_INSTANCE}}.azurecr.io/exampleapp:latest
+  CONTAINER_FQDN_PREFIX: exampleappuatpr${{ github.event.pull_request.number }}
+  SQLSERVER_PASSWORD: ${{secrets.UAT_SQLSERVER_PASSWORD}}
+  SQLSERVER_CONNECTION_STRING: ${{secrets.UAT_SQLSERVER_CONNECTION_STRING}}
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'uat')
-
+    if: contains(github.event.pull_request.labels.*.name, 'uat created') &&
+      contains(github.event.pull_request.labels.*.name, 'deploy')
     steps:
+      - name: Remove deployed label if it exists
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: "deployed"
+
       - uses: actions/checkout@v3
       - run: npm install
       - run: dotnet publish -c Release -o dist
-      - name: Set value of container tag
-        run: echo "container_tag=exampleapp:$(date +%s)" >> $GITHUB_ENV
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag ${{ env.container_tag }}
+        run: docker build . --file Dockerfile --tag ${{ env.CONTAINER_TAG }}
       - name: "Login via Azure CLI"
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Publish Docker image to ACR
-        uses:
+      - name: Login to ACR instance
+        run: az acr login --name ${{env.AZURE_CONTAINER_REGISTRY}}
+      - name: Publish Docker container
+        run: docker push ${{ env.CONTAINER_TAG }}
+      - name: Create or restart container instance
+        run: |
+          docker context create aci myacicontext
+          docker --context myacicontext compose -f .github/workflows/uat/docker-compose-uat.yml up
+
+      - name: Remove deploy label
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: "deploy"
+
+      - name: Label the PR with 'deployed'
+        if: success()
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: "deployed"

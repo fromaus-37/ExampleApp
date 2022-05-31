@@ -5,13 +5,15 @@ services:
     image: "mcr.microsoft.com/mssql/server:2019-latest"
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=Passw0rdSQL
+      - SA_PASSWORD=${SQLSERVER_PASSWORD}
     ports:
       - "1433:1433"
 
   mvc:
     image: "regsna.azurecr.io/exampleapp:db"
-    domainname: "exampleappsna"
+    environment:
+      - ConnectionStrings__ProductDB="${SQLSERVER_CONNECTION_STRING}"
+    domainname: ${CONTAINER_FQDN_PREFIX}
     ports:
       - "80:80"
     depends_on:

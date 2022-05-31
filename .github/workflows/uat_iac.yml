@@ -1,4 +1,4 @@
-name: Spinup UAT environment
+name: Spinup or Teardown UAT environment
 
 on:
   pull_request:
