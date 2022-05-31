@@ -59,8 +59,14 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'uat created')
 
     steps:
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Delete resource group
         run: az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --yes
+
       - name: Remove IaC labels from PR
         if: success()
         uses: actions-ecosystem/action-remove-labels@v1
