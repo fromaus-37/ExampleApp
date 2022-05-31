@@ -40,9 +40,13 @@ jobs:
         run: az acr login --name ${{env.AZURE_CONTAINER_REGISTRY}}
       - name: Publish Docker container
         run: docker push ${{ env.CONTAINER_TAG }}
+
+      - name: "Docker login azure"
+        run: "docker login azure"
+
       - name: Create or restart container instance
         run: |
-          'docker context create aci myacicontext --subscription-id ${{ secrets.AZURE_SUBSCRIPTION_ID }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}'
+          docker context create aci myacicontext --subscription-id ${{ secrets.AZURE_SUBSCRIPTION_ID }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
       - name: Remove deploy label
         uses: actions-ecosystem/action-remove-labels@v1
