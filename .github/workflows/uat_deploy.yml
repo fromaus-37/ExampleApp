@@ -11,7 +11,7 @@ env:
   AZURE_LOCATION: westeurope
   AZURE_CONTAINER_REGISTRY: crexampleappuatpr${{ github.event.pull_request.number }}
   CONTAINER_TAG: crexampleappuatpr${{ github.event.pull_request.number }}.azurecr.io/exampleapp:latest
-  AZURE_CONTAINER_INSTANCE: ciexampleappuatpr${{ github.event.pull_request.number }}
+  CONTAINER_INSTANCE: ciexampleappuatpr${{ github.event.pull_request.number }}
   CONTAINER_FQDN_PREFIX: exampleappuatpr${{ github.event.pull_request.number }}
   SQLSERVER_PASSWORD: ${{secrets.UAT_SQLSERVER_PASSWORD}}
   SQLSERVER_CONNECTION_STRING: ${{secrets.UAT_SQLSERVER_CONNECTION_STRING}}
@@ -63,10 +63,18 @@ jobs:
           docker context create aci myacicontext --subscription-id ${{ secrets.AZURE_SUBSCRIPTION_ID }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
       - name: Create or restart container instance
-        # we docker compose down first as it needs to be done before Azure would allow
-        # memory/cpu reservation of a container to be altered
+        # we need to delete the existing ACI instance (the container group) first
+        # as it needs to be done before Azure would allow memory/cpu reservation of a container to be altered.
+        #
+        # docker compose down no good for this if the container group doesn't already exist.
+        # Hence to give ourselves a well-known name, instead of the docker compose default of
+        # name of the containing directory, we have delcare the name of the ACI instance
+        # in an environment variable. We pass it to az containe delete which does NOT return
+        # an error if the container instance doesn't already exist.
+        # We then also pass it to docker compose up in parameter --project-name
         run: |
-          docker --context myacicontext compose -f .github/workflows/uat/docker-compose-uat.yml up
+          az container delete -n ${{ env.CONTAINER_INSTANCE }} -g ${{ env.AZURE_RESOURCE_GROUP }} --yes
+          docker --context myacicontext compose -f .github/workflows/uat/docker-compose-uat.yml --project-name ${{ env.CONTAINER_INSTANCE }} up
 
       - name: Remove deploy label
         uses: actions-ecosystem/action-remove-labels@v1
