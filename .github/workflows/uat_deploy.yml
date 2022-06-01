@@ -93,6 +93,12 @@ jobs:
         with:
           labels: deployed
 
+      - name: Delete previous sticky comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          delete: true
+
       - name: Get current datetime to write in PR comment
         run: |
           echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
