@@ -90,11 +90,16 @@ jobs:
         run: |
           echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
 
+      - name: Delete existing PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          delete: true
+
       - name: Update PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: uat
-          recreate: true
           message: |
             # UAT Environment - _Deployed_
 
