@@ -10,7 +10,7 @@ services:
       - "1433:1433"
 
   mvc:
-    image: "regsna.azurecr.io/exampleapp:db"
+    image: "${CONTAINER_TAG}"
     environment:
       - ConnectionStrings__ProductDB="${SQLSERVER_CONNECTION_STRING}"
     domainname: ${CONTAINER_FQDN_PREFIX}
