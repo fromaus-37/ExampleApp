@@ -72,7 +72,6 @@ jobs:
           header: uat
           message: |
             # UAT Environment
-            ----
 
             **UAT environment created**
 
