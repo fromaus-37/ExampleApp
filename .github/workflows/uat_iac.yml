@@ -30,7 +30,7 @@ jobs:
       - name: Delete resource group if it exists
         if: success()
         run: |
-          if [ "$(az group exists -n ${{ env.AZURE_RESOURCE_GROUP }}" == "true" ]
+          if [ "$(az group exists -n ${{ env.AZURE_RESOURCE_GROUP }})" == "true" ]
           then
           az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --yes
 
