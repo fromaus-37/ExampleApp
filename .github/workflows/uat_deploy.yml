@@ -86,12 +86,17 @@ jobs:
         with:
           labels: deployed
 
+      - name: Get current datetime to write in PR comment
+        run: |
+          echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
+
       - name: Update PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: uat
           message: |
-            # UAT Environment
-            ----
+            # UAT Environment - _Deployed_
+
+            UAT environment deployed on ${{ env.current_time }}
 
             Deployed ${{ github.sha }} to <http://${{ env.CONTAINER_FQDN_PREFIX }}.${{ env.AZURE_LOCATION }}.azurecontainer.io>

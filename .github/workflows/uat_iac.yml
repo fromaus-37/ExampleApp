@@ -65,15 +65,14 @@ jobs:
 
       - name: Get current datetime to write in PR comment
         run: |
-          echo "current_time=$(date +'%d %b %Y **%H:%M** %Z')" >> $GITHUB_ENV
+          echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
 
       - name: Update PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: uat
-          recreate: true
           message: |
-            # UAT Environment
+            # UAT Environment - _Created_
 
             UAT environment created on ${{ env.current_time }}
 
@@ -108,3 +107,16 @@ jobs:
             deployed
             teardown
             uat created
+
+      - name: Get current datetime to write in PR comment
+        run: |
+          echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
+
+      - name: Update PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Torn down_
+
+            UAT environment torn down on ${{ env.current_time }}
