@@ -8,6 +8,7 @@ services:
         reservations:
           cpus: '1'
           memory: 4G
+
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=${SQLSERVER_PASSWORD}
@@ -16,15 +17,17 @@ services:
 
   mvc:
     image: "${CONTAINER_TAG}"
+    domainname: "${CONTAINER_FQDN_PREFIX}"
     deploy:
       resources:
         reservations:
           cpus: '1'
-          memory: 2G
+          memory: 4G
+
 
     environment:
-      - ConnectionStrings__ProductDB="${SQLSERVER_CONNECTION_STRING}"
-    domainname: ${CONTAINER_FQDN_PREFIX}
+      - ConnectionStrings__ProductDB=${SQLSERVER_CONNECTION_STRING}
+
     ports:
       - "80:80"
     depends_on:

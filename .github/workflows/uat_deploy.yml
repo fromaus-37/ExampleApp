@@ -42,10 +42,19 @@ jobs:
       - name: Publish Docker container
         run: docker push ${{ env.CONTAINER_TAG }}
 
+        # According to page "Docker and ACI" in Docker documentation, the Docker Compose CLI
+        # "adds support for running and managing containers on Azure Container Instances (ACI)"
+        #
+        # Without it, the command docker login azur ran but wouldn't recognise any of the parameters
+        # e.g. 'the command does not accept --client-id parameter'
+        # If I omitted docker login azure, the aci specific parameters of the docker context create aci
+        # command would similarly fail to be recognised.
       - name: Install Docker Compose CLI
         run: >
           curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh
 
+      # without this, even after installing Docker Compose CLI as done above,
+      # the docker context create aci command didn't work
       - name: "Docker login azure"
         run: docker login azure --client-id ${{ secrets.AZURE_CLIENT_ID }} --client-secret ${{ secrets.AZURE_CLIENT_SECRET }} --tenant-id ${{ secrets.AZURE_TENANT_ID }}
 
