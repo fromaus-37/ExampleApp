@@ -66,6 +66,16 @@ jobs:
           labels: "spinup"
           fail-on-error: false
 
+      - name: Update PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment
+            ----
+
+            **UAT environment created**
+
   teardown-uat:
     permissions:
       contents: read
