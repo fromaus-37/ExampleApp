@@ -28,7 +28,6 @@ jobs:
           labels: |
             deployed
             uat created
-          fail_on_error: false
 
       - name: Azure login
         uses: azure/login@v1
@@ -57,17 +56,15 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: "uat created"
-          fail_on_error: false
 
       - name: Remove 'spinup' label from PR
         if: success()
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: "spinup"
-          fail_on_error: false
 
       - name: Get current datetime to write in PR comment
-        run: echo "current_time=$(date)" >> $GITHUB_ENV
+        run: echo "current_time=$(date +'%a %F %H:%M %Z')" >> $GITHUB_ENV
 
       - name: Update PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
@@ -76,7 +73,7 @@ jobs:
           message: |
             # UAT Environment
 
-            **UAT environment created on ${{ env.current_time }}**
+            **UAT environment created** on **${{ env.current_time }}**
 
   teardown-uat:
     permissions:
@@ -109,4 +106,3 @@ jobs:
             deployed
             teardown
             uat created
-          fail_on_error: false
