@@ -41,6 +41,10 @@ jobs:
       - name: Publish Docker container
         run: docker push ${{ env.CONTAINER_TAG }}
 
+      - name: Install Docker Compose CLI
+        run: >
+          curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh
+
       - name: "Docker login azure"
         run: docker login azure --client-id ${{ secrets.AZURE_CLIENT_ID }} --client-secret ${{ secrets.AZURE_CLIENT_SECRET }} --tenant-id ${{ secrets.AZURE_TENANT_ID }}
 
