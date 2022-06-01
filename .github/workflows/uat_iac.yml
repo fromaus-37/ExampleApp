@@ -71,6 +71,7 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: uat
+          recreate: true
           message: |
             # UAT Environment - _Created_
 
@@ -116,6 +117,7 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: uat
+          recreate: true
           message: |
             # UAT Environment - _Torn down_
 
