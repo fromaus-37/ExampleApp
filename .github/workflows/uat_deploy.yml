@@ -49,9 +49,12 @@ jobs:
       - name: "Docker login azure"
         run: docker login azure --client-id ${{ secrets.AZURE_CLIENT_ID }} --client-secret ${{ secrets.AZURE_CLIENT_SECRET }} --tenant-id ${{ secrets.AZURE_TENANT_ID }}
 
-      - name: Create or restart container instance
+      - name: Create docker context
         run: |
           docker context create aci myacicontext --subscription-id ${{ secrets.AZURE_SUBSCRIPTION_ID }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
+
+      - name: Create or restart container instance
+        run: docker --context myacicontext compose -f .github/workflows/uat/docker-compose-uat.yml up
 
       - name: Remove deploy label
         uses: actions-ecosystem/action-remove-labels@v1
