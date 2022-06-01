@@ -25,7 +25,8 @@ jobs:
       - name: Remove deployed label if it exists
         uses: actions-ecosystem/action-remove-labels@v1
         with:
-          labels: "deployed"
+          labels: deployed
+          fail-on-error: false
 
       - uses: actions/checkout@v3
       - run: npm install
@@ -55,10 +56,12 @@ jobs:
       - name: Remove deploy label
         uses: actions-ecosystem/action-remove-labels@v1
         with:
-          labels: "deploy"
+          labels: deploy
+          fail-on-error: false
 
       - name: Label the PR with 'deployed'
         if: success()
         uses: actions-ecosystem/action-add-labels@v1
         with:
-          labels: "deployed"
+          labels: deployed
+          fail-on-error: false

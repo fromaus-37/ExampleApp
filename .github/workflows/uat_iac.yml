@@ -18,10 +18,18 @@ jobs:
       pull-requests: write
 
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'spinup') &&
-      ! contains(github.event.pull_request.labels.*.name, 'uat created')
+    if: contains(github.event.pull_request.labels.*.name, 'spinup')
 
     steps:
+      - name: Remove  labels from PR
+        if: success()
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            deployed
+            uat created
+          fail-on-error: false
+
       - name: Azure login
         uses: azure/login@v1
         with:
@@ -49,12 +57,14 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: "uat created"
+          fail-on-error: false
 
-      - name: Remove 'spinup uat' label from PR
+      - name: Remove 'spinup' label from PR
         if: success()
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: "spinup"
+          fail-on-error: false
 
   teardown-uat:
     permissions:
@@ -63,8 +73,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    if: contains(github.event.pull_request.labels.*.name, 'teardown') &&
-      contains(github.event.pull_request.labels.*.name, 'uat created')
+    if: contains(github.event.pull_request.labels.*.name, 'teardown')
 
     steps:
       - name: Azure login
@@ -72,13 +81,20 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Delete resource group
-        run: az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --yes
+      - name: Delete resource group if it exists
+        if: success()
+        run: |
+          if [ $(az group exists -n ${{ env.AZURE_RESOURCE_GROUP }}) == "true" ]
+          then
+          az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --yes
+          fi
 
       - name: Remove IaC labels from PR
         if: success()
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: |
+            deployed
             teardown
             uat created
+          fail-on-error: false
