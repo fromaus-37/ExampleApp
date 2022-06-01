@@ -15,6 +15,10 @@ services:
 
   mvc:
     image: "${CONTAINER_TAG}"
+    deploy:
+      resources:
+        reservations:
+          memory: 1G
     environment:
       - ConnectionStrings__ProductDB="${SQLSERVER_CONNECTION_STRING}"
     domainname: ${CONTAINER_FQDN_PREFIX}
