@@ -26,7 +26,7 @@ jobs:
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: |
-            deployed
+            uat deployed
             uat created
 
       - name: Update PR Comment to indicate start
@@ -93,6 +93,14 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'teardown')
 
     steps:
+      - name: Remove uat created and uat deployed labels from PR
+        if: success()
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            uat deployed
+            uat created
+
       - name: Update PR Comment to indicate start
         uses: marocchino/sticky-pull-request-comment@v2
         with:
@@ -113,14 +121,11 @@ jobs:
           az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --yes
           fi
 
-      - name: Remove IaC labels from PR
+      - name: Remove teardown label from PR
         if: success()
         uses: actions-ecosystem/action-remove-labels@v1
         with:
-          labels: |
-            deployed
-            teardown
-            uat created
+          labels: teardown
 
       - name: Get current datetime to write in PR comment
         run: |

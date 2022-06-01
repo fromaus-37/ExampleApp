@@ -22,10 +22,10 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'uat created') &&
       contains(github.event.pull_request.labels.*.name, 'deploy')
     steps:
-      - name: Remove deployed label if it exists
+      - name: Remove uat deployed label if it exists
         uses: actions-ecosystem/action-remove-labels@v1
         with:
-          labels: deployed
+          labels: uat deployed
 
       - name: Update PR Comment to indicate start
         uses: marocchino/sticky-pull-request-comment@v2
@@ -87,11 +87,11 @@ jobs:
         with:
           labels: deploy
 
-      - name: Label the PR with 'deployed'
+      - name: Label the PR with 'uat deployed'
         if: success()
         uses: actions-ecosystem/action-add-labels@v1
         with:
-          labels: deployed
+          labels: uat deployed
 
       - name: Get current datetime to write in PR comment
         run: |
