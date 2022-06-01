@@ -17,7 +17,7 @@ env:
   SQLSERVER_CONNECTION_STRING: ${{secrets.UAT_SQLSERVER_CONNECTION_STRING}}
 
 jobs:
-  build-and-publish:
+  build-and-deploy-uat:
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'uat created') &&
       contains(github.event.pull_request.labels.*.name, 'deploy')
