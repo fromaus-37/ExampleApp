@@ -66,6 +66,9 @@ jobs:
           labels: "spinup"
           fail_on_error: false
 
+      - name: Get current datetime to write in PR comment
+        run: echo "current_time=$(date)" >> $GITHUB_ENV
+
       - name: Update PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
         with:
@@ -73,7 +76,7 @@ jobs:
           message: |
             # UAT Environment
 
-            **UAT environment created**
+            **UAT environment created on ${{ env.current_time }}**
 
   teardown-uat:
     permissions:
