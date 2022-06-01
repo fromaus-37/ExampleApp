@@ -88,3 +88,10 @@ jobs:
         with:
           labels: deployed
           fail-on-error: false
+
+      - name: Update PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+          with:
+          header: uat
+          message: |
+            Deployed ${{ github.sha }} to <http://${{ env.CONTAINER_FQDN_PREFIX }}.${{ env.AZURE_LOCATION }}.azurecontainer.com>
