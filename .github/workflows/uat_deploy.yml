@@ -94,4 +94,7 @@ jobs:
         with:
           header: uat
           message: |
+            # UAT Environment
+            ----
+
             Deployed ${{ github.sha }} to <http://${{ env.CONTAINER_FQDN_PREFIX }}.${{ env.AZURE_LOCATION }}.azurecontainer.io>
