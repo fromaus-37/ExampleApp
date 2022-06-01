@@ -27,6 +27,13 @@ jobs:
         with:
           labels: deployed
 
+      - name: Update PR Comment to indicate start
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Deploying ..._
+
       - uses: actions/checkout@v3
       - run: npm install
       - run: dotnet publish -c Release -o dist
@@ -89,12 +96,6 @@ jobs:
       - name: Get current datetime to write in PR comment
         run: |
           echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
-
-      - name: Delete existing PR Comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: uat
-          delete: true
 
       - name: Update PR Comment
         uses: marocchino/sticky-pull-request-comment@v2

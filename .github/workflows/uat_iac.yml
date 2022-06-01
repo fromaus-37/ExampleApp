@@ -29,6 +29,13 @@ jobs:
             deployed
             uat created
 
+      - name: Update PR Comment to indicate start
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Spinning up ..._
+
       - name: Azure login
         uses: azure/login@v1
         with:
@@ -71,7 +78,6 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: uat
-          recreate: true
           message: |
             # UAT Environment - _Created_
 
@@ -87,6 +93,13 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'teardown')
 
     steps:
+      - name: Update PR Comment to indicate start
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Tearing down ..._
+
       - name: Azure login
         uses: azure/login@v1
         with:
@@ -117,7 +130,6 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: uat
-          recreate: true
           message: |
             # UAT Environment - _Torn down_
 
