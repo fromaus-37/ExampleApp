@@ -54,7 +54,11 @@ jobs:
           docker context create aci myacicontext --subscription-id ${{ secrets.AZURE_SUBSCRIPTION_ID }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }}
 
       - name: Create or restart container instance
-        run: docker --context myacicontext compose -f .github/workflows/uat/docker-compose-uat.yml up
+        # we docker compose down first as it needs to be done before Azure would allow
+        # memory/cpu reservation of a container to be altered
+        run: |
+          docker --context myacicontext compose -f .github/workflows/uat/docker-compose-uat.yml down
+          docker --context myacicontext compose -f .github/workflows/uat/docker-compose-uat.yml up
 
       - name: Remove deploy label
         uses: actions-ecosystem/action-remove-labels@v1
