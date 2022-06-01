@@ -6,7 +6,8 @@ services:
     deploy:
       resources:
         reservations:
-          memory: 2G
+          cpus: '1'
+          memory: 4G
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=${SQLSERVER_PASSWORD}
@@ -18,7 +19,9 @@ services:
     deploy:
       resources:
         reservations:
-          memory: 1G
+          cpus: '1'
+          memory: 2G
+
     environment:
       - ConnectionStrings__ProductDB="${SQLSERVER_CONNECTION_STRING}"
     domainname: ${CONTAINER_FQDN_PREFIX}
