@@ -28,7 +28,7 @@ jobs:
           labels: |
             deployed
             uat created
-          fail-on-error: false
+          fail_on_error: false
 
       - name: Azure login
         uses: azure/login@v1
@@ -57,14 +57,14 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: "uat created"
-          fail-on-error: false
+          fail_on_error: false
 
       - name: Remove 'spinup' label from PR
         if: success()
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: "spinup"
-          fail-on-error: false
+          fail_on_error: false
 
       - name: Update PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
@@ -106,4 +106,4 @@ jobs:
             deployed
             teardown
             uat created
-          fail-on-error: false
+          fail_on_error: false
