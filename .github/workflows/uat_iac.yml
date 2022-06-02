@@ -56,6 +56,12 @@ jobs:
         run: |
           az acr create --name ${{env.AZURE_CONTAINER_REGISTRY}} --resource-group ${{env.AZURE_RESOURCE_GROUP}} --sku Basic
 
+      - name: Remove spinup label from PR
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            spinup
+
       - name: Get current datetime to write in PR comment
         run: |
           echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
@@ -99,8 +105,7 @@ jobs:
           az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --yes
           fi
 
-      - name: Remove teardown label from PR
-        if: success()
+      - name: Remove CD label from PR
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: |

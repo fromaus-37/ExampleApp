@@ -19,8 +19,7 @@ env:
 jobs:
   build-and-deploy-uat:
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'spinup') &&
-      contains(github.event.pull_request.labels.*.name, 'deploy')
+    if: contains(github.event.pull_request.labels.*.name, 'deploy')
     steps:
       - name: Update PR Comment to indicate start
         uses: marocchino/sticky-pull-request-comment@v2
@@ -76,6 +75,13 @@ jobs:
         run: |
           az container delete -n ${{ env.CONTAINER_INSTANCE }} -g ${{ env.AZURE_RESOURCE_GROUP }} --yes
           docker --context myacicontext compose -f .github/workflows/uat/docker-compose-uat.yml --project-name ${{ env.CONTAINER_INSTANCE }} up
+
+      - name: Remove deploy label from PR
+        if: success()
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            deploy
 
       - name: Get current datetime to write in PR comment
         run: |
