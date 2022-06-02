@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "bower": "^1.8.14",
     "wait-for-it.sh": "^1.0.0"
   }
 }
