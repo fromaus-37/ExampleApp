@@ -28,20 +28,27 @@ jobs:
           message: |
             # UAT Environment - _Deploying ..._
 
+      - name: Login via Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Fail if environment not created
         run: |
-          echo "::error ::Environment not created"
-          exit 64
+          if [ $(az group exists -n ${{ env.AZURE_RESOURCE_GROUP }}) == "true" ]
+          then
+            echo "Environment exists. Proceeding to deploy..."
+          else
+            echo "::error ::Environment does not exist. Spinup the environment before running deploy job."
+            exit 64
+          fi
 
       - uses: actions/checkout@v3
       - run: npm install
       - run: dotnet publish -c Release -o dist
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ${{ env.CONTAINER_TAG }}
-      - name: "Login via Azure CLI"
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Login to ACR instance
         run: az acr login --name ${{env.AZURE_CONTAINER_REGISTRY}}
       - name: Publish Docker container
