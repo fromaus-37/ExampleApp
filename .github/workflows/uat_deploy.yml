@@ -127,20 +127,6 @@ jobs:
         run: |
           echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
 
-      - name: Update PR Comment to indicate success
-        if: success()
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: uat
-          message: |
-            # UAT Environment - _Deployed_
-
-            UAT environment deployed on ${{ env.current_time }}
-
-            Deployed ${{ github.sha }} to <http://${{ env.CONTAINER_FQDN_PREFIX }}.${{ env.AZURE_LOCATION }}.azurecontainer.io>
-
-            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
-
       - name: Update PR comment to indicate failure
         if: failure()
         uses: marocchino/sticky-pull-request-comment@v2
@@ -162,5 +148,18 @@ jobs:
             # UAT Environment - _Deployment cancelled!_
 
             Deployment cancelled on ${{ env.current_time }}
+
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+      - name: Update PR Comment to indicate success
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Deployed_
+
+            UAT environment deployed on ${{ env.current_time }}
+
+            Deployed ${{ github.sha }} to <http://${{ env.CONTAINER_FQDN_PREFIX }}.${{ env.AZURE_LOCATION }}.azurecontainer.io>
 
             Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
