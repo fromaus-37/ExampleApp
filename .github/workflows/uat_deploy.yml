@@ -44,6 +44,7 @@ jobs:
           fi
 
       - name: Show failure in sticky comment if environment does not exist
+        if: ${{ env.env_created == 0 }}
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: uat
@@ -55,12 +56,10 @@ jobs:
             Environment does not exist. Spinup an environment and then deploy.
 
       - name: Fail if environment does not exist
+        if: ${{ env.env_created == 0 }}
         run: |
-          if [ env_created == 0 ]
-          then
-            echo "::error ::Cannot deploy because environment does not exist"
-            exit 64
-          fi
+          echo "::error ::Cannot deploy because environment does not exist"
+          exit 64
 
       - uses: actions/checkout@v3
       - run: npm install
