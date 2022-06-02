@@ -53,13 +53,18 @@ jobs:
 
             Deployment failed on ${{ env.current_time }}
 
-            Environment does not exist. Spinup an environment and then deploy.
+            Environment does not exist.
 
+            Spinup an environment and then deploy.
+
+        # If environment does not exist, then exit with error code 1.
+        # This error code appears to be a "catchall for general errors"
+        # that are a result of "impermissible operations"
       - name: Fail if environment does not exist
         if: ${{ env.env_created == 0 }}
         run: |
           echo "::error ::Cannot deploy because environment does not exist"
-          exit 64
+          exit 1
 
       - uses: actions/checkout@v3
       - run: npm install
