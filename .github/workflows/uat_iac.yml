@@ -59,6 +59,7 @@ jobs:
           az acr create --name ${{env.AZURE_CONTAINER_REGISTRY}} --resource-group ${{env.AZURE_RESOURCE_GROUP}} --sku Basic
 
       - name: Remove spinup label from PR
+        if: always()
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: |
@@ -110,6 +111,7 @@ jobs:
           fi
 
       - name: Remove CD label from PR
+        if: always()
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: |
