@@ -1,0 +1,36 @@
+name: Validate labels used to issue CD commands
+
+on:
+  pull_request:
+    types: [labeled]
+
+concurrency: uat-pr-${{ github.event.pull_request.number }}
+
+jobs:
+  validate-labels:
+    permissions:
+      contents: read
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    # There are three labels - deploy, spinup and teardown - that we
+    # only want to appeat one at a time. Hence we want to exclude
+    # any pair of these (which includes the case of all three) appearing
+    # on the pull request. There are 3C2 = 3 such pairs.
+    if: (contains(github.event.pull_request.labels.*.name, 'spinup') &&
+      contains(github.event.pull_request.labels.*.name, 'deploy')) ||
+      (contains(github.event.pull_request.labels.*.name, 'spinup') &&
+      contains(github.event.pull_request.labels.*.name, 'teardown')) ||
+      (contains(github.event.pull_request.labels.*.name, 'deploy') &&
+      contains(github.event.pull_request.labels.*.name, 'teardown'))
+    steps:
+      - name: Update PR Comment to say command combination is invalid
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Invalid command labels!_
+
+            Only **one** command label, i.e. only one of **spinup**, **deploy** or **teardown**, may be placed on the pull request at a time.
+
+            This pull request contains more than one of these labels.

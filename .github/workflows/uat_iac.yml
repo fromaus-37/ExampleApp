@@ -1,4 +1,4 @@
-name: Spinup or Teardown UAT environment
+name: Spinup/Teardown UAT environment
 
 on:
   pull_request:
@@ -18,7 +18,9 @@ jobs:
       pull-requests: write
 
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'spinup')
+    if: contains(github.event.pull_request.labels.*.name, 'spinup') &&
+      ! contains(github.event.pull_request.labels.*.name, 'deploy') &&
+      ! contains(github.event.pull_request.labels.*.name, 'teardown')
 
     steps:
       - name: Remove  deploy label from PR if it exists
@@ -82,7 +84,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    if: contains(github.event.pull_request.labels.*.name, 'teardown')
+    if: contains(github.event.pull_request.labels.*.name, 'teardown') &&
+      ! contains(github.event.pull_request.labels.*.name, 'spinup') &&
+      ! contains(github.event.pull_request.labels.*.name, 'deploy')
 
     steps:
       - name: Update PR Comment to indicate start
@@ -110,8 +114,6 @@ jobs:
         with:
           labels: |
             teardown
-            spinup
-            deploy
 
       - name: Get current datetime to write in PR comment
         run: |
