@@ -36,6 +36,8 @@ jobs:
           message: |
             # UAT Environment - _Spinning up ..._
 
+            To **cancel**, go to **[workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
       - name: Azure login
         uses: azure/login@v1
         with:
@@ -124,6 +126,8 @@ jobs:
           header: uat
           message: |
             # UAT Environment - _Tearing down ..._
+
+            To **cancel**, go to **[workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
 
       - name: Azure login
         uses: azure/login@v1

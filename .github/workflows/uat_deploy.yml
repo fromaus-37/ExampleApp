@@ -30,6 +30,8 @@ jobs:
           message: |
             # UAT Environment - _Deploying ..._
 
+            To **cancel**, go to **[workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
       - name: Login via Azure CLI
         uses: azure/login@v1
         with:
