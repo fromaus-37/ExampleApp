@@ -31,7 +31,7 @@ jobs:
       - name: Fail if environment not created
         run: |
           echo "::error ::Environment not created"
-          set -eo pipefail
+          exit 64
 
       - uses: actions/checkout@v3
       - run: npm install
