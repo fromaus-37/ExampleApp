@@ -33,13 +33,32 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Fail if environment not created
+      - name: Determine if environment created
         run: |
           if [ $(az group exists -n ${{ env.AZURE_RESOURCE_GROUP }}) == "true" ]
           then
-            echo "Environment exists. Proceeding to deploy..."
+            echo "env_created=1" >> $GITHUB_ENV
           else
-            echo "::error ::Environment does not exist. Spinup the environment before running deploy job."
+            echo "env_created=0" >> $GITHUB_ENV
+            echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
+          fi
+
+      - name: Show failure in sticky comment if environment does not exist
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Deployment failed!_
+
+            Deployment failed on ${{ env.current_time }}
+
+            Environment does not exist. Spinup an environment and then deploy.
+
+      - name: Fail if environment does not exist
+        run: |
+          if [ env_created == 0 ]
+          then
+            echo "::error ::Cannot deploy because environment does not exist"
             exit 64
           fi
 
