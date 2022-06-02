@@ -148,4 +148,4 @@ jobs:
 
             Deployment failed on ${{ env.current_time }}
 
-            Check workflow run logs to see what went wrong.
+            Check [workflow run logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) to see what went wrong.
