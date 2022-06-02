@@ -21,13 +21,11 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'spinup')
 
     steps:
-      - name: Remove  labels from PR
-        if: success()
+      - name: Remove  deploy label from PR if it exists
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: |
-            uat deployed
-            uat created
+            deploy
 
       - name: Update PR Comment to indicate start
         uses: marocchino/sticky-pull-request-comment@v2
@@ -58,18 +56,6 @@ jobs:
         run: |
           az acr create --name ${{env.AZURE_CONTAINER_REGISTRY}} --resource-group ${{env.AZURE_RESOURCE_GROUP}} --sku Basic
 
-      - name: Label the PR with 'uat created'
-        if: success()
-        uses: actions-ecosystem/action-add-labels@v1
-        with:
-          labels: "uat created"
-
-      - name: Remove 'spinup' label from PR
-        if: success()
-        uses: actions-ecosystem/action-remove-labels@v1
-        with:
-          labels: "spinup"
-
       - name: Get current datetime to write in PR comment
         run: |
           echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
@@ -93,14 +79,6 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'teardown')
 
     steps:
-      - name: Remove uat created and uat deployed labels from PR
-        if: success()
-        uses: actions-ecosystem/action-remove-labels@v1
-        with:
-          labels: |
-            uat deployed
-            uat created
-
       - name: Update PR Comment to indicate start
         uses: marocchino/sticky-pull-request-comment@v2
         with:
@@ -125,7 +103,10 @@ jobs:
         if: success()
         uses: actions-ecosystem/action-remove-labels@v1
         with:
-          labels: teardown
+          labels: |
+            teardown
+            spinup
+            deploy
 
       - name: Get current datetime to write in PR comment
         run: |
