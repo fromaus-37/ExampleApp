@@ -29,7 +29,9 @@ jobs:
             # UAT Environment - _Deploying ..._
 
       - name: Fail if environment not created
-        run: echo "::error ::Environment not created"
+        run: |
+          echo "::error ::Environment not created"
+          set -eo pipefail
 
       - uses: actions/checkout@v3
       - run: npm install
