@@ -70,7 +70,8 @@ jobs:
 
       - uses: actions/checkout@v3
       - run: npm install
-      - run: npm install -g bower
+      # only removing -g flag in following command to simulate failure
+      - run: npm install bower
       - run: bower install
       - run: dotnet publish -c Release -o dist
       - name: Build the Docker image
@@ -136,3 +137,15 @@ jobs:
             UAT environment deployed on ${{ env.current_time }}
 
             Deployed ${{ github.sha }} to <http://${{ env.CONTAINER_FQDN_PREFIX }}.${{ env.AZURE_LOCATION }}.azurecontainer.io>
+
+      - name: Show any failure in sticky comment
+        if: failure()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Deployment failed!_
+
+            Deployment failed on ${{ env.current_time }}
+
+            Check workflow run logs to see what went wrong.
