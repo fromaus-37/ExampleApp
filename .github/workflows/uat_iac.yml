@@ -41,9 +41,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Simulate error
-        run: exit 1
-
       - name: Delete resource group if it exists
         if: success()
         run: |
@@ -132,9 +129,6 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Simulate error
-        run: exit 1
 
       - name: Delete resource group if it exists
         if: success()
