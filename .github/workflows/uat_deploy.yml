@@ -70,8 +70,7 @@ jobs:
 
       - uses: actions/checkout@v3
       - run: npm install
-      # only removing -g flag in following command to simulate failure
-      - run: npm install bower
+      - run: npm install -g bower
       - run: bower install
       - run: dotnet publish -c Release -o dist
       - name: Build the Docker image
@@ -140,7 +139,7 @@ jobs:
 
             Deployed ${{ github.sha }} to <http://${{ env.CONTAINER_FQDN_PREFIX }}.${{ env.AZURE_LOCATION }}.azurecontainer.io>
 
-            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})** to see what went wrong.
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
 
       - name: Update PR comment to indicate failure
         if: failure()
@@ -152,7 +151,7 @@ jobs:
 
             Deployment failed on ${{ env.current_time }}
 
-            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})** to see what went wrong.
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
 
       - name: Update PR comment to indicate cancellation
         if: cancelled()
@@ -164,4 +163,4 @@ jobs:
 
             Deployment cancelled on ${{ env.current_time }}
 
-            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})** to see what went wrong.
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
