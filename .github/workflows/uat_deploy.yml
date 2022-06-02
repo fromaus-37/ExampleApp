@@ -28,6 +28,9 @@ jobs:
           message: |
             # UAT Environment - _Deploying ..._
 
+      - name: Fail if environment not created
+        run: echo "::error ::Environment not created"
+
       - uses: actions/checkout@v3
       - run: npm install
       - run: dotnet publish -c Release -o dist
@@ -57,9 +60,6 @@ jobs:
       # the docker context create aci command didn't work
       - name: "Docker login azure"
         run: docker login azure --client-id ${{ secrets.AZURE_CLIENT_ID }} --client-secret ${{ secrets.AZURE_CLIENT_SECRET }} --tenant-id ${{ secrets.AZURE_TENANT_ID }}
-
-      - name: Fail if environment not created
-        run: echo "::error ::Environment not created"
 
       - name: Create docker context
         run: |
