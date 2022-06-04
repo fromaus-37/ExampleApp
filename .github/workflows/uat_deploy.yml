@@ -94,8 +94,13 @@ jobs:
         run: >
           curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh
 
-      # without this, even after installing Docker Compose CLI as done above,
-      # the docker context create aci command didn't work
+      # Without this, even after installing Docker Compose CLI as done above,
+      # the docker context create aci command didn't work.
+      #
+      # My wiki says it's needed if the deployment command (az container create or,
+      # persumably in our case, docker compose up executed in a docker aci context)
+      # is to be able to pull the image from the ACR instance as images
+      # on an ACR instance are not publicly available (at least not by deafult)
       - name: "Docker login azure"
         run: docker login azure --client-id ${{ secrets.AZURE_CLIENT_ID }} --client-secret ${{ secrets.AZURE_CLIENT_SECRET }} --tenant-id ${{ secrets.AZURE_TENANT_ID }}
 
