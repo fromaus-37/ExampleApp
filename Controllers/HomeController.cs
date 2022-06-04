@@ -15,6 +15,7 @@ namespace ExampleApp.Controllers
         public IActionResult Index()
         {
             ViewBag.Message = message;
+            throw new System.Exception("I like an error!");
             return View(repository.Products);
         }
     }
