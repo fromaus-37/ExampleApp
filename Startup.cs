@@ -34,6 +34,7 @@ namespace ExampleApp
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddApplicationInsightsTelemetry();
             services.AddDbContext<ProductDbContext>(optionsBuilder =>
             {
 
