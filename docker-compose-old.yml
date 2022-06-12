@@ -1,0 +1,36 @@
+version: '3'
+
+networks:
+  frontend:
+  backend:
+
+
+services:
+  sqlserver:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    networks:
+      - backend
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Passw0rdSQL
+
+  mvc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - sqlserver
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - mvc
+    ports:
+      - "4000:4000"
+    networks:
+      - frontend

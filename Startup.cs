@@ -66,7 +66,6 @@ namespace ExampleApp
 
             app.UseStaticFiles();
 
-            logger.LogInformation(Configuration.GetConnectionString("ProductDB"));
             SeedData.EnsurePopulated(context);
 
         }
