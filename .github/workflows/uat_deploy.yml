@@ -13,6 +13,7 @@ env:
   CONTAINER_TAG: crexampleappuatpr${{ github.event.pull_request.number }}.azurecr.io/exampleapp:latest
   CONTAINER_INSTANCE: ciexampleappuatpr${{ github.event.pull_request.number }}
   CONTAINER_FQDN_PREFIX: exampleappuatpr${{ github.event.pull_request.number }}
+  CONTAINER_PORT: 5000
   SQLSERVER_PASSWORD: ${{secrets.UAT_SQLSERVER_PASSWORD}}
   SQLSERVER_CONNECTION_STRING: ${{secrets.UAT_SQLSERVER_CONNECTION_STRING}}
 
@@ -168,6 +169,6 @@ jobs:
 
             UAT environment deployed on ${{ env.current_time }}
 
-            Deployed ${{ github.sha }} to <http://${{ env.CONTAINER_FQDN_PREFIX }}.${{ env.AZURE_LOCATION }}.azurecontainer.io>
+            Deployed ${{ github.sha }} to <http://${{ env.CONTAINER_FQDN_PREFIX }}.${{ env.AZURE_LOCATION }}.azurecontainer.io:${{ env.CONTAINER_PORT }}>
 
             Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
