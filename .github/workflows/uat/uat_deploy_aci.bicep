@@ -35,7 +35,7 @@ param port int
   'Never'
   'OnFailure'
 ])
-param restartPolicy string = 'Never'
+param restartPolicy string = 'Always'
 
 @description('Location for all resources.')
 param location string = resourceGroup().location
@@ -62,7 +62,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
             }
             {
               name: 'SA_PASSWORD'
-              value: sqlServerSAPassword
+              secureValue: sqlServerSAPassword
             }
           ]
 
