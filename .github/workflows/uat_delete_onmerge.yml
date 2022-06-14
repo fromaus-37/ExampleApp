@@ -1,0 +1,93 @@
+name: Delete UAT on merge
+
+on:
+  pull_request:
+    types: [closed]
+
+concurrency: uat-pr-${{ github.event.pull_request.number }}
+
+env:
+  AZURE_RESOURCE_GROUP: rg-exampleapp-uat-pr-${{ github.event.pull_request.number }}
+  AZURE_LOCATION: westeurope
+  AZURE_CONTAINER_REGISTRY: crexampleappuatpr${{ github.event.pull_request.number }}
+
+jobs:
+  teardown-uat-onmerge:
+    permissions:
+      contents: read
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Update PR Comment to indicate start
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Tearing down on PR merge_
+
+            See **[workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Delete resource group if it exists
+        if: success()
+        run: |
+          if [ $(az group exists -n ${{ env.AZURE_RESOURCE_GROUP }}) == "true" ]
+          then
+          az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --yes
+          fi
+
+      - name: Remove all deploy and IaC labels from PR
+        if: always()
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            teardown
+            spinup
+            deploy
+
+      - name: Get current datetime to write in PR comment
+        if: always()
+        run: |
+          echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
+
+      - name: Update PR comment to indicate failure
+        if: failure()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Teardown on PR merge failed!_
+
+            Teardown failed on ${{ env.current_time }}
+
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+      - name: Update PR comment to indicate cancellation
+        if: cancelled()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Teardown on PR merge cancelled!_
+
+            Teardown cancelled on ${{ env.current_time }}
+
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+      - name: Update PR Comment to indicate success
+        if: success()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Torn down on PR merge_
+
+            UAT environment torn down on ${{ env.current_time }}
+
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.

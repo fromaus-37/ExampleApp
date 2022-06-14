@@ -11,7 +11,7 @@ param mvcRegistryServer string
 @secure()
 param clientId string
 
-@description('Name for the container group')
+@description('service principal password')
 @secure()
 param clientSecret string
 
@@ -57,7 +57,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
             }
             {
               name: 'SA_PASSWORD'
-              value: sqlServerSAPassword
+              secureValue: sqlServerSAPassword
             }
           ]
 
@@ -83,7 +83,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
           environmentVariables: [
             {
               name: 'ConnectionStrings__ProductDB'
-              value: sqlServerConnectionString
+              secureValue: sqlServerConnectionString
             }
           ]
           resources: {

@@ -1,4 +1,4 @@
-name: Spinup or Teardown UAT environment
+name: UAT IaC and deployment jobs
 
 on:
   pull_request:
@@ -147,3 +147,209 @@ jobs:
             Deployed ${{ github.sha }} to <http://${{ env.CONTAINER_FQDN_PREFIX }}.${{ env.AZURE_LOCATION }}.azurecontainer.io:${{ env.CONTAINER_PORT }}>
 
             Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+  spinup-uat:
+    permissions:
+      contents: read
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'spinup') &&
+      ! contains(github.event.pull_request.labels.*.name, 'deploy') &&
+      ! contains(github.event.pull_request.labels.*.name, 'teardown')
+
+    steps:
+      - name: Remove  deploy label from PR if it exists
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            deploy
+
+      - name: Update PR Comment to indicate start
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Spinning up ..._
+
+            To **cancel**, go to **[workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Delete resource group if it exists
+        if: success()
+        run: |
+          if [ $(az group exists -n ${{ env.AZURE_RESOURCE_GROUP }}) == "true" ]
+          then
+          az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --yes
+          fi
+
+      - name: Create resource group
+        if: success()
+        run: az group create --name ${{env.AZURE_RESOURCE_GROUP}} --location ${{env.AZURE_LOCATION}}
+
+      - name: Create Docker registry
+        if: success()
+        run: |
+          az acr create --name ${{env.AZURE_CONTAINER_REGISTRY}} --resource-group ${{env.AZURE_RESOURCE_GROUP}} --sku Basic
+
+      - name: Remove spinup label from PR
+        if: always()
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            spinup
+
+      - name: Get current datetime to write in PR comment
+        if: always()
+        run: |
+          echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
+
+      - name: Update PR comment to indicate failure
+        if: failure()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Spin up failed!_
+
+            Spin up failed on ${{ env.current_time }}
+
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+      - name: Update PR comment to indicate cancellation
+        if: cancelled()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Spin up cancelled!_
+
+            Spin up cancelled on ${{ env.current_time }}
+
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+      - name: Update PR Comment
+        if: success()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Created_
+
+            UAT environment created on ${{ env.current_time }}
+
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+  teardown-uat:
+    permissions:
+      contents: read
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+
+    if: contains(github.event.pull_request.labels.*.name, 'teardown') &&
+      ! contains(github.event.pull_request.labels.*.name, 'spinup') &&
+      ! contains(github.event.pull_request.labels.*.name, 'deploy')
+
+    steps:
+      - name: Update PR Comment to indicate start
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Tearing down ..._
+
+            To **cancel**, go to **[workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Delete resource group if it exists
+        if: success()
+        run: |
+          if [ $(az group exists -n ${{ env.AZURE_RESOURCE_GROUP }}) == "true" ]
+          then
+          az group delete --name ${{env.AZURE_RESOURCE_GROUP}} --yes
+          fi
+
+      - name: Remove teardown label from PR
+        if: always()
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            teardown
+
+      - name: Get current datetime to write in PR comment
+        if: always()
+        run: |
+          echo "current_time=$(date +'%d %b **%H:%M** %Z')" >> $GITHUB_ENV
+
+      - name: Update PR comment to indicate failure
+        if: failure()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Teardown failed!_
+
+            Teardown failed on ${{ env.current_time }}
+
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+      - name: Update PR comment to indicate cancellation
+        if: cancelled()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Teardown cancelled!_
+
+            Teardown cancelled on ${{ env.current_time }}
+
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+      - name: Update PR Comment to indicate success
+        if: success()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Torn down_
+
+            UAT environment torn down on ${{ env.current_time }}
+
+            Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
+
+  validate-labels:
+    permissions:
+      contents: read
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    # There are three labels - deploy, spinup and teardown - that we
+    # only want to appeat one at a time. Hence we want to exclude
+    # any pair of these (which includes the case of all three) appearing
+    # on the pull request. There are 3C2 = 3 such pairs.
+    if: (contains(github.event.pull_request.labels.*.name, 'spinup') &&
+      contains(github.event.pull_request.labels.*.name, 'deploy')) ||
+      (contains(github.event.pull_request.labels.*.name, 'spinup') &&
+      contains(github.event.pull_request.labels.*.name, 'teardown')) ||
+      (contains(github.event.pull_request.labels.*.name, 'deploy') &&
+      contains(github.event.pull_request.labels.*.name, 'teardown'))
+    steps:
+      - name: Update PR Comment to say command combination is invalid
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: uat
+          message: |
+            # UAT Environment - _Invalid command labels!_
+
+            Only **one** command label, i.e. only one of **spinup**, **deploy** or **teardown**, may be placed on the pull request at a time.
+
+            This pull request contains more than one of these labels.
