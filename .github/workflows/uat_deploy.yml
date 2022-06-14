@@ -96,7 +96,7 @@ jobs:
         run: |
           az container delete -n ${{ env.CONTAINER_INSTANCE }} -g ${{ env.AZURE_RESOURCE_GROUP }} --yes
 
-          az deployment group create -g ${{ env.AZURE_RESOURCE_GROUP }} --template-file uat/uat_deploy_aci.bicep --parameters name=${{ env.CONTAINER_INSTANCE }} dnsNameLabel=${{env.CONTAINER_FQDN_PREFIX}} mvcRegistryServer=${{env.AZURE_CONTAINER_REGISTRY_URL}} clientId=${{secrets.AZURE_CLIENT_ID}} clientSecret=${{secrets.AZURE_CLIENT_SECRET}} mvcImage=${{env.CONTAINER_TAG}} sqlServerSAPassword=${{secrets.UAT_SQLSERVER_PASSWORD}} sqlServerConnectionString=${{secrets.UAT_SQLSERVER_CONNECTION_STRING}} port=${{env.CONTAINER_PORT}}
+          az deployment group create -g ${{ env.AZURE_RESOURCE_GROUP }} --template-file .github/workflows/uat/uat_deploy_aci.bicep --parameters name=${{ env.CONTAINER_INSTANCE }} dnsNameLabel=${{env.CONTAINER_FQDN_PREFIX}} mvcRegistryServer=${{env.AZURE_CONTAINER_REGISTRY_URL}} clientId=${{secrets.AZURE_CLIENT_ID}} clientSecret=${{secrets.AZURE_CLIENT_SECRET}} mvcImage=${{env.CONTAINER_TAG}} sqlServerSAPassword=${{secrets.UAT_SQLSERVER_PASSWORD}} sqlServerConnectionString=${{secrets.UAT_SQLSERVER_CONNECTION_STRING}} port=${{env.CONTAINER_PORT}}
 
       - name: Remove deploy label from PR
         if: always()
