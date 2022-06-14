@@ -62,7 +62,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
             }
             {
               name: 'SA_PASSWORD'
-              secureValue: sqlServerSAPassword
+              value: sqlServerSAPassword
             }
           ]
 
@@ -88,7 +88,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
           environmentVariables: [
             {
               name: 'ConnectionStrings__ProductDB'
-              secureValue: sqlServerConnectionString
+              value: sqlServerConnectionString
             }
           ]
           resources: {
