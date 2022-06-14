@@ -34,6 +34,7 @@ namespace ExampleApp
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddApplicationInsightsTelemetry();
             services.AddDbContext<ProductDbContext>(optionsBuilder =>
             {
 
@@ -65,7 +66,6 @@ namespace ExampleApp
 
             app.UseStaticFiles();
 
-            logger.LogInformation(Configuration.GetConnectionString("ProductDB"));
             SeedData.EnsurePopulated(context);
 
         }
