@@ -52,7 +52,6 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
           ports: [
             {
               port: 1433
-              protocol: 'TCP'
             }
           ]
           environmentVariables: [
