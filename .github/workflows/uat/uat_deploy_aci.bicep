@@ -49,11 +49,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
         name: 'sqlserver'
         properties: {
           image: 'mcr.microsoft.com/mssql/server:2019-latest'
-          ports: [
-            {
-              port: 1433
-            }
-          ]
+
           environmentVariables: [
             {
               name: 'ACCEPT_EULA'
