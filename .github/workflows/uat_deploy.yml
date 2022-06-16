@@ -36,16 +36,13 @@ jobs:
             # UAT Environment - _Deploying ..._
 
             To **cancel**, go to **[workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
-      #${{ secrets.AZURE_CLIENT_ID }}
-      #${{ secrets.AZURE_TENANT_ID }}
-      #${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # client-id: 78abd3b3-b4c6-4e75-9370-4de7770042fa
-      #tenant-id: cb65b5b1-7b37-4b02-a6b9-07b1d0b2d112
-      #subscription-id: 31d96823-311d-436b-b1be-1a2239e14de5
-      - name: Login via Azure CLI
+
+      - name: Azure login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Determine if environment created
         run: |
@@ -253,10 +250,6 @@ jobs:
             Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
 
   teardown-uat:
-    permissions:
-      contents: read
-      pull-requests: write
-
     runs-on: ubuntu-latest
 
     if: contains(github.event.pull_request.labels.*.name, 'teardown') &&
