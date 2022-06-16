@@ -38,12 +38,12 @@ jobs:
       #${{ secrets.AZURE_CLIENT_ID }}
       #${{ secrets.AZURE_TENANT_ID }}
       #${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # client-id: 78abd3b3-b4c6-4e75-9370-4de7770042fa
+      #tenant-id: cb65b5b1-7b37-4b02-a6b9-07b1d0b2d112
+      #subscription-id: 31d96823-311d-436b-b1be-1a2239e14de5
       - name: Login via Azure CLI
         uses: azure/login@v1
-        with:
-          client-id: 78abd3b3-b4c6-4e75-9370-4de7770042fa
-          tenant-id: cb65b5b1-7b37-4b02-a6b9-07b1d0b2d112
-          subscription-id: 00129f48-8f98-45ef-863a-4549ad8d4b68
+        with: ${{AZURE_CREDENTIALS}}
 
       - name: Determine if environment created
         run: |
