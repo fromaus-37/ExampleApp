@@ -43,7 +43,7 @@ jobs:
       #subscription-id: 31d96823-311d-436b-b1be-1a2239e14de5
       - name: Login via Azure CLI
         uses: azure/login@v1
-        with: ${{AZURE_CREDENTIALS}}
+        with: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Determine if environment created
         run: |
