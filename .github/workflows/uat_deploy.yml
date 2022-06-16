@@ -158,10 +158,6 @@ jobs:
             Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
 
   spinup-uat:
-    permissions:
-      contents: read
-      pull-requests: write
-
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'spinup') &&
       ! contains(github.event.pull_request.labels.*.name, 'deploy') &&
