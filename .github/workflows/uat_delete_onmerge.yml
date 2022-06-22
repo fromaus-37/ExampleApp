@@ -29,6 +29,7 @@ jobs:
 
             See **[workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
 
+      # needed to add this comment to be able to create a PR
       - name: Azure login
         uses: azure/login@v1
         with:
