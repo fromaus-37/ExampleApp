@@ -4,8 +4,11 @@ param name string
 @description('prefix of the container group\'s fully qualified domain name for the container group')
 param dnsNameLabel string
 
-@description('Name of the container registry')
-param mvcRegistryName string
+@description('URL of the registry from which MVC app Docker image is to be pulled.')
+param mvcRegistryServer string
+
+@description('Full URI of the user-assigned  managed identity resource that has permissions to pull from the specified registry of the MVC app Docker image')
+param managedIdentityForMvcRegistry string
 
 @description('MVC application image URI. Images from private registries require additional registry credentials.')
 param mvcImage string
@@ -90,7 +93,12 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
         }
       }
     ]
-
+    imageRegistryCredentials: [
+      {
+        server: mvcRegistryServer
+        identity: managedIdentityForMvcRegistry
+      }
+    ]
     osType: 'Linux'
     restartPolicy: restartPolicy
     ipAddress: {
@@ -103,36 +111,6 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
       ]
       dnsNameLabel: dnsNameLabel
     }
-  }
-}
-
-// resource acrResource 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
-//   dependsOn: [ containerGroup ]
-//   name: mvcRegistryName
-//   location: location
-//   sku: {
-//     name: mvcRegistrySku
-//   }
-
-// }
-
-resource mvcRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
-  name: mvcRegistryName
-}
-
-@description('This is the built-in acrpull role. Built-inroles are subscription scoped resources')
-resource acrpullRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
-  scope: subscription()
-  name: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-}
-
-resource mvcRegistryRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  scope: mvcRegistry
-  name: guid(mvcRegistry.id, containerGroup.id, acrpullRoleDefinition.id)
-  properties: {
-    roleDefinitionId: acrpullRoleDefinition.id
-    principalId: containerGroup.identity.principalId
-    principalType: 'ServicePrincipal'
   }
 }
 
