@@ -4,16 +4,11 @@ param name string
 @description('prefix of the container group\'s fully qualified domain name for the container group')
 param dnsNameLabel string
 
-@description('URL of the container registry')
+@description('URL of the registry from which MVC app Docker image is to be pulled.')
 param mvcRegistryServer string
 
-@description('Name for the container group')
-@secure()
-param clientId string
-
-@description('service principal password')
-@secure()
-param clientSecret string
+@description('Full URI of the user-assigned  managed identity resource that has permissions to pull from the specified registry of the MVC app Docker image')
+param managedIdentityForMvcRegistry string
 
 @description('MVC application image URI. Images from private registries require additional registry credentials.')
 param mvcImage string
@@ -43,6 +38,13 @@ param location string = resourceGroup().location
 resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01' = {
   name: name
   location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentityForMvcRegistry}': {}
+    }
+  }
+
   properties: {
     containers: [
       {
@@ -98,8 +100,7 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
     imageRegistryCredentials: [
       {
         server: mvcRegistryServer
-        username: clientId
-        password: clientSecret
+        identity: managedIdentityForMvcRegistry
       }
     ]
     osType: 'Linux'

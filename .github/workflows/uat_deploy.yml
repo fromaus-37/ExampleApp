@@ -4,6 +4,11 @@ on:
   pull_request:
     types: [labeled]
 
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
 concurrency: uat-pr-${{ github.event.pull_request.number }}
 
 env:
@@ -32,10 +37,12 @@ jobs:
 
             To **cancel**, go to **[workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
 
-      - name: Login via Azure CLI
+      - name: Azure login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Determine if environment created
         run: |
@@ -96,7 +103,7 @@ jobs:
         run: |
           az container delete -n ${{ env.CONTAINER_INSTANCE }} -g ${{ env.AZURE_RESOURCE_GROUP }} --yes
 
-          az deployment group create -g ${{ env.AZURE_RESOURCE_GROUP }} --template-file .github/workflows/uat/uat_deploy_aci.bicep --parameters name='${{ env.CONTAINER_INSTANCE }}' dnsNameLabel='${{env.CONTAINER_FQDN_PREFIX}}' mvcRegistryServer='${{env.AZURE_CONTAINER_REGISTRY_URL}}' clientId='${{secrets.AZURE_CLIENT_ID}}' clientSecret='${{secrets.AZURE_CLIENT_SECRET}}' mvcImage='${{env.CONTAINER_TAG}}' sqlServerSAPassword='${{secrets.UAT_SQLSERVER_PASSWORD}}' sqlServerConnectionString='${{secrets.UAT_SQLSERVER_CONNECTION_STRING}}' port='${{env.CONTAINER_PORT}}'
+          az deployment group create -g ${{ env.AZURE_RESOURCE_GROUP }} --template-file .github/workflows/uat/uat_deploy_aci.bicep --parameters name='${{ env.CONTAINER_INSTANCE }}' dnsNameLabel='${{env.CONTAINER_FQDN_PREFIX}}' mvcImage='${{env.CONTAINER_TAG}}' sqlServerSAPassword='${{secrets.UAT_SQLSERVER_PASSWORD}}' sqlServerConnectionString='${{secrets.UAT_SQLSERVER_CONNECTION_STRING}}' port='${{env.CONTAINER_PORT}}' mvcRegistryServer='${{env.AZURE_CONTAINER_REGISTRY_URL}}' managedIdentityForMvcRegistry='${{secrets.AZURE_MANAGED_IDENTITY_URI_FOR_ACR_ACCESS}}'
 
       - name: Remove deploy label from PR
         if: always()
@@ -149,10 +156,6 @@ jobs:
             Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
 
   spinup-uat:
-    permissions:
-      contents: read
-      pull-requests: write
-
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'spinup') &&
       ! contains(github.event.pull_request.labels.*.name, 'deploy') &&
@@ -177,7 +180,9 @@ jobs:
       - name: Azure login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Delete resource group if it exists
         if: success()
@@ -245,10 +250,6 @@ jobs:
             Workflow run logs are **[here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})**.
 
   teardown-uat:
-    permissions:
-      contents: read
-      pull-requests: write
-
     runs-on: ubuntu-latest
 
     if: contains(github.event.pull_request.labels.*.name, 'teardown') &&
@@ -268,7 +269,9 @@ jobs:
       - name: Azure login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Delete resource group if it exists
         if: success()
