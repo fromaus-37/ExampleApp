@@ -39,8 +39,12 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
   name: name
   location: location
   identity: {
-    type: 'SystemAssigned'
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentityForMvcRegistry}': {}
+    }
   }
+
   properties: {
     containers: [
       {

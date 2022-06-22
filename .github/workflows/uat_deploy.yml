@@ -103,7 +103,7 @@ jobs:
         run: |
           az container delete -n ${{ env.CONTAINER_INSTANCE }} -g ${{ env.AZURE_RESOURCE_GROUP }} --yes
 
-          az deployment group create -g ${{ env.AZURE_RESOURCE_GROUP }} --template-file .github/workflows/uat/uat_deploy_aci.bicep --parameters name='${{ env.CONTAINER_INSTANCE }}' dnsNameLabel='${{env.CONTAINER_FQDN_PREFIX}}' mvcRegistryName='${{env.AZURE_CONTAINER_REGISTRY}}' mvcImage='${{env.CONTAINER_TAG}}' sqlServerSAPassword='${{secrets.UAT_SQLSERVER_PASSWORD}}' sqlServerConnectionString='${{secrets.UAT_SQLSERVER_CONNECTION_STRING}}' port='${{env.CONTAINER_PORT}}' mvcRegistryServer='${{env.AZURE_CONTAINER_REGISTRY_URL}}' managedIdentityForMvcRegistry='${{secrets.AZURE_MANAGED_IDENTITY_URI_FOR_ACR_ACCESS}}'
+          az deployment group create -g ${{ env.AZURE_RESOURCE_GROUP }} --template-file .github/workflows/uat/uat_deploy_aci.bicep --parameters name='${{ env.CONTAINER_INSTANCE }}' dnsNameLabel='${{env.CONTAINER_FQDN_PREFIX}}' mvcImage='${{env.CONTAINER_TAG}}' sqlServerSAPassword='${{secrets.UAT_SQLSERVER_PASSWORD}}' sqlServerConnectionString='${{secrets.UAT_SQLSERVER_CONNECTION_STRING}}' port='${{env.CONTAINER_PORT}}' mvcRegistryServer='${{env.AZURE_CONTAINER_REGISTRY_URL}}' managedIdentityForMvcRegistry='${{secrets.AZURE_MANAGED_IDENTITY_URI_FOR_ACR_ACCESS}}'
 
       - name: Remove deploy label from PR
         if: always()
