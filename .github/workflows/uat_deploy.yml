@@ -91,9 +91,7 @@ jobs:
           dotnet publish -c Release -o dist
 
       - name: Build the Docker image
-        run: |
-          cd ExampleApp
-          docker build . --file Dockerfile --tag ${{ env.CONTAINER_TAG }}
+        run: docker build . --file ExampleApp/Dockerfile --tag ${{ env.CONTAINER_TAG }}
 
       - name: Login to ACR instance
         run: az acr login --name ${{env.AZURE_CONTAINER_REGISTRY}}
