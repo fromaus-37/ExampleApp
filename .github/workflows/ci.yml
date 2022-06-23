@@ -12,12 +12,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: npm install
-      - run: dotnet publish -c Release -o dist
+      - name: Install NPM packages
+        run: |
+          cd ExampleApp
+          npm install
+      - name: build and publish
+        run: |
+          cd ExampleApp
+          dotnet publish -c Release -o dist
       - name: Set value of container tag
         run: echo "container_tag=exampleapp:$(date +%s)" >> $GITHUB_ENV
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag ${{ env.container_tag }}
+        run: |
+          docker build . --file ExampleApp/Dockerfile --tag ${{ env.container_tag }}
       - name: Upload container image to artifacts
         uses: ishworkh/docker-image-artifact-upload@v1
         with:

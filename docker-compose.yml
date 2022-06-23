@@ -7,6 +7,6 @@ services:
     image: exampleapp
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ExampleApp/Dockerfile
     ports:
       - 5000:5000
