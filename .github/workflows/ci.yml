@@ -12,7 +12,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: npm install
+      - name: Install NPM packages
+        run: |
+          cd ExampleApp
+          npm install
       - run: dotnet publish -c Release -o dist
       - name: Set value of container tag
         run: echo "container_tag=exampleapp:$(date +%s)" >> $GITHUB_ENV
