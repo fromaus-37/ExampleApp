@@ -11,10 +11,10 @@ USER appuser
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1-focal AS build
 WORKDIR /src
-COPY ["ExampleApp/ExampleApp.csproj", "ExampleApp/"]
-RUN dotnet restore "ExampleApp/ExampleApp.csproj"
+COPY ["ExampleApp.csproj", "./"]
+RUN dotnet restore "ExampleApp.csproj"
 COPY . .
-WORKDIR "/src/ExampleApp"
+WORKDIR "/src/."
 RUN dotnet build "ExampleApp.csproj" -c Release -o /app/build
 
 FROM build AS publish
