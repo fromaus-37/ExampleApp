@@ -16,7 +16,10 @@ jobs:
         run: |
           cd ExampleApp
           npm install
-      - run: dotnet publish -c Release -o dist
+      - name: build and publish
+        run: |
+          cd ExampleApp
+          dotnet publish -c Release -o dist
       - name: Set value of container tag
         run: echo "container_tag=exampleapp:$(date +%s)" >> $GITHUB_ENV
       - name: Build the Docker image
